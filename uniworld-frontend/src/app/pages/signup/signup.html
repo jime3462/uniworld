@@ -1,1 +1,26 @@
-<p>signup works!</p>
+<section class="signup-page">
+  <div class="signup-card">
+    <h1>Create Account</h1>
+    <p class="subtitle">Join Uniworld in a few simple steps.</p>
+
+    <form class="signup-form" (ngSubmit)="onSubmit()">
+      <label for="username">Username</label>
+      <input id="username" type="text" name="username" autocomplete="username" [(ngModel)]="name" required />
+
+      <label for="email">Email</label>
+      <input id="email" type="email" name="email" autocomplete="email" [(ngModel)]="email" required />
+
+      <label for="password">Password</label>
+      <input id="password" type="password" name="password" autocomplete="new-password" [(ngModel)]="password" required />
+
+      <button type="submit" [disabled]="isSubmitting">{{ isSubmitting ? 'Creating account...' : 'Sign Up' }}</button>
+
+      <p *ngIf="errorMessage">{{ errorMessage }}</p>
+    </form>
+
+    <p class="signin-link">
+      Already have an account?
+      <a routerLink="/signin">Sign in</a>
+    </p>
+  </div>
+</section>

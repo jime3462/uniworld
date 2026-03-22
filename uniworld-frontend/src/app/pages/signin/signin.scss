@@ -1,0 +1,70 @@
+:host {
+	display: grid;
+	place-items: center;
+	min-height: 100vh;
+	padding: 1rem;
+}
+
+.signin-card {
+	width: min(100%, 400px);
+	padding: 1.25rem;
+	border: 1px solid #95b9c8;
+	border-radius: 8px;
+	background: #d4e7ef;
+}
+
+h1 {
+	margin: 0;
+	font-size: 1.4rem;
+	color: #1c3f4f;
+}
+
+.subtitle {
+	margin: 0.4rem 0 1rem;
+	color: #345766;
+}
+
+.signin-form {
+	display: grid;
+	gap: 0.6rem;
+}
+
+label {
+	color: #1f3f4d;
+}
+
+input {
+	padding: 0.65rem 0.75rem;
+	border: 1px solid #9bbbc8;
+	border-radius: 6px;
+	font-size: 1rem;
+	background: #f6fbfd;
+}
+
+input:focus {
+	outline: none;
+	border-color: #5a93aa;
+}
+
+button {
+	margin-top: 0.4rem;
+	padding: 0.7rem;
+	border: 0;
+	border-radius: 6px;
+	background: #3c6d80;
+	color: #fff;
+	cursor: pointer;
+}
+
+button:hover {
+	background: #335f6f;
+}
+
+.signup-link {
+	margin-top: 1rem;
+	color: #2f4d5a;
+}
+
+.signup-link a {
+	color: #2e5f72;
+}
