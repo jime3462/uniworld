@@ -35,7 +35,23 @@ export class Signup {
         },
         error: (error) => {
           this.isSubmitting = false;
-          this.errorMessage = error?.error?.message ?? 'Sign up failed. Please try again.';
+          const status = error?.status as number | undefined;
+          const backendMessage =
+            error?.error?.message ??
+            error?.error?.detail ??
+            error?.error?.error;
+
+          if (status === 409) {
+            this.errorMessage = 'Email is already in use. Try signing in or use another email.';
+            return;
+          }
+
+          if (status === 400) {
+            this.errorMessage = backendMessage ?? 'Please fill in all required fields.';
+            return;
+          }
+
+          this.errorMessage = backendMessage ?? 'Sign up failed. Please try again.';
         },
       });
   }

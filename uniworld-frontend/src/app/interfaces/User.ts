@@ -1,7 +1,11 @@
+import type { Playlist } from './Playlist';
+import type { Song } from './Song';
+
 export interface User {
-  id: string;
+  userID: number;
   name: string;
   email: string;
-  password: string;
-  role: 'user' | 'admin';
+  role: string;
+  currentSong?: Song | null;
+  playlists?: Playlist[];
 }

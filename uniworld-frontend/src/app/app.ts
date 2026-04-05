@@ -1,13 +1,30 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { Home } from './pages/home/home';
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
+import { LeftSb } from './components/left-sb/left-sb';
+import { RightSb } from './components/right-sb/right-sb';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [CommonModule, RouterOutlet, LeftSb, RightSb],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('uniworld-frontend');
+  showSidebars = true;
+
+  constructor(private readonly router: Router) {
+    this.updateSidebarVisibility(this.router.url);
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        const navigationEnd = event as NavigationEnd;
+        this.updateSidebarVisibility(navigationEnd.urlAfterRedirects);
+      });
+  }
+
+  private updateSidebarVisibility(url: string): void {
+    this.showSidebars = !(url.startsWith('/signin') || url.startsWith('/signup'));
+  }
 }

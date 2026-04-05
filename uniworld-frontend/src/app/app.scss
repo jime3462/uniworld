@@ -1,0 +1,32 @@
+:host {
+	display: grid;
+	grid-template-columns: 240px 1fr 260px;
+	grid-template-areas: "left content right";
+	align-items: start;
+	gap: 1.25rem;
+	min-height: 100vh;
+	padding: 1.25rem;
+}
+
+app-left-sb {
+	grid-area: left;
+}
+
+app-right-sb {
+	grid-area: right;
+}
+
+.content {
+	grid-area: content;
+	min-width: 0;
+}
+
+@media (max-width: 1000px) {
+	:host {
+		grid-template-columns: 1fr;
+		grid-template-areas:
+			"left"
+			"content"
+			"right";
+	}
+}

@@ -7,64 +7,74 @@
 
 .signup-card {
 	width: min(100%, 400px);
-	padding: 1.25rem;
-	border: 1px solid #95b9c8;
-	border-radius: 8px;
-	background: #d4e7ef;
+	padding: 1.5rem;
+	border: 1px solid var(--mid);
+	border-radius: 14px;
+	background: rgba(31, 31, 31, 0.9);
+	box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
 }
 
 h1 {
 	margin: 0;
-	font-size: 1.4rem;
-	color: #1c3f4f;
+	font-size: 1.5rem;
+	color: var(--light);
 }
 
 .subtitle {
 	margin: 0.4rem 0 1rem;
-	color: #345766;
+	color: var(--mid);
 }
 
 .signup-form {
 	display: grid;
-	gap: 0.6rem;
+	gap: 0.7rem;
 }
 
 label {
-	color: #1f3f4d;
+	color: var(--light);
 }
 
 input {
 	padding: 0.65rem 0.75rem;
-	border: 1px solid #9bbbc8;
+	border: 1px solid var(--mid);
 	border-radius: 6px;
 	font-size: 1rem;
-	background: #f6fbfd;
+	background: rgba(212, 212, 212, 0.1);
+	color: var(--light);
 }
 
 input:focus {
 	outline: none;
-	border-color: #5a93aa;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 2px rgba(115, 16, 16, 0.25);
 }
 
 button {
 	margin-top: 0.4rem;
 	padding: 0.7rem;
-	border: 0;
+	border: 1px solid var(--accent);
 	border-radius: 6px;
-	background: #3c6d80;
-	color: #fff;
+	background: var(--accent);
+	color: var(--light);
+	font-weight: 600;
 	cursor: pointer;
 }
 
 button:hover {
-	background: #335f6f;
+	background: #1f1f1f;
 }
 
 .signin-link {
 	margin-top: 1rem;
-	color: #2f4d5a;
+	color: var(--mid);
 }
 
 .signin-link a {
-	color: #2e5f72;
+	color: var(--light);
+}
+
+.signup-form > p {
+	margin: 0.3rem 0 0;
+	color: var(--accent);
+	font-weight: 600;
 }

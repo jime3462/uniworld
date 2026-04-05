@@ -1,1 +1,11 @@
-<router-outlet></router-outlet>
+<ng-container *ngIf="showSidebars; else authLayout">
+	<app-left-sb></app-left-sb>
+	<main class="content">
+		<router-outlet></router-outlet>
+	</main>
+	<app-right-sb></app-right-sb>
+</ng-container>
+
+<ng-template #authLayout>
+	<router-outlet></router-outlet>
+</ng-template>

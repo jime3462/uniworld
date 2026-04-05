@@ -1,8 +1,57 @@
 :host{
     display: flex;
     flex-direction: column;
-    align-items: left;
-    //justify-content: center;
+    align-items: flex-start;
+    gap: 1rem;
     width: 100%;
-    height: 100%;
+    min-height: 100%;
+    padding: 1rem;
+    border: 1px solid var(--mid);
+    border-radius: 14px;
+    background: rgba(31, 31, 31, 0.85);
+    color: var(--light);
+}
+
+.logo h3,
+.playlist h3 {
+    margin: 0;
+}
+
+.menu ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.4rem;
+}
+
+.menu a {
+    display: block;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--light);
+    text-decoration: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.menu a:hover {
+    border-color: var(--accent);
+    background: rgba(112, 112, 112, 0.2);
+}
+
+.create-playlist {
+    margin-top: 0.6rem;
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--light);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.create-playlist:hover {
+    background: #1f1f1f;
 }

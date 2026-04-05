@@ -1,4 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap');
+
 /* You can add global styles to this file, and also import other style files */
+:root {
+    --light: #d4d4d4;
+    --mid: #707070;
+    --dark: #1f1f1f;
+    --accent: #731010;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
 * {
-    background-color: #bddbe8;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    color: var(--light);
+    font-family: 'Sora', 'Segoe UI', sans-serif;
+    background:
+        radial-gradient(circle at 8% 8%, var(--mid) 0%, transparent 36%),
+        radial-gradient(circle at 90% 22%, var(--accent) 0%, transparent 42%),
+        linear-gradient(150deg, var(--dark) 0%, #1f1f1f 52%, var(--accent) 100%);
+}
+
+a {
+    color: var(--light);
+}
+
+a:hover {
+    color: var(--accent);
 }

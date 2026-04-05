@@ -32,7 +32,11 @@ export class Signin {
       },
       error: (error) => {
         this.isSubmitting = false;
-        this.errorMessage = error?.error?.message ?? 'Sign in failed. Please check your credentials.';
+        const backendMessage =
+          error?.error?.message ??
+          error?.error?.detail ??
+          error?.error?.error;
+        this.errorMessage = backendMessage ?? 'Sign in failed. Please check your credentials.';
       },
     });
   }

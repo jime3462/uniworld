@@ -1,0 +1,124 @@
+:host {
+	display: block;
+	padding: 0.8rem;
+	border: 1px solid var(--mid);
+	border-radius: 12px;
+	background: rgba(31, 31, 31, 0.9);
+	color: var(--light);
+}
+
+.player {
+	display: grid;
+	gap: 0.85rem;
+}
+
+.header {
+	display: grid;
+	grid-template-columns: 72px 1fr;
+	gap: 0.75rem;
+	align-items: center;
+}
+
+.cover {
+	width: 72px;
+	height: 72px;
+	object-fit: cover;
+	border-radius: 10px;
+	border: 1px solid rgba(112, 112, 112, 0.45);
+	background: rgba(31, 31, 31, 1);
+	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+.meta {
+	display: grid;
+	gap: 0.2rem;
+}
+
+.name {
+	margin: 0;
+	font-size: 1.1rem;
+	color: var(--light);
+}
+
+.artist {
+	font-size: 0.95rem;
+	color: var(--mid);
+}
+
+.genre {
+	margin: 0;
+	font-size: 0.85rem;
+	color: var(--accent);
+}
+
+.buttons {
+	display: flex;
+	gap: 0.6rem;
+	flex-wrap: wrap;
+}
+
+.progress-wrap {
+	display: grid;
+	gap: 0.35rem;
+}
+
+.progress {
+	width: 100%;
+	accent-color: var(--accent);
+	cursor: pointer;
+}
+
+.time-row {
+	display: flex;
+	justify-content: space-between;
+	font-size: 0.8rem;
+	color: var(--mid);
+}
+
+.modes {
+	display: flex;
+	gap: 0.6rem;
+	flex-wrap: wrap;
+}
+
+.btn {
+	border: 1px solid var(--mid);
+	background: rgba(31, 31, 31, 0.9);
+	color: var(--light);
+	padding: 0.55rem 0.9rem;
+	border-radius: 10px;
+	cursor: pointer;
+	font-size: 0.9rem;
+	transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+	border-color: var(--accent);
+	transform: translateY(-1px);
+}
+
+.btn.primary {
+	background: rgba(115, 16, 16, 0.35);
+	border-color: var(--accent);
+}
+
+.btn.mode.active {
+	border-color: var(--accent);
+	background: rgba(115, 16, 16, 0.3);
+}
+
+.empty {
+	margin: 0;
+	color: var(--mid);
+}
+
+@media (max-width: 500px) {
+	.header {
+		grid-template-columns: 1fr;
+	}
+
+	.cover {
+		width: 92px;
+		height: 92px;
+	}
+}

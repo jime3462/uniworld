@@ -1,1 +1,6 @@
-<p>right-sb works!</p>
+<p class="heading">Quick Player</p>
+
+<p *ngIf="songsLoading" class="status">Loading songs...</p>
+<p *ngIf="songsError" class="status error">{{ songsError }}</p>
+
+<app-player *ngIf="!songsLoading && !songsError" [queue]="songs" [startIndex]="0"></app-player>

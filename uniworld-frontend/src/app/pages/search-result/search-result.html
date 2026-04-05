@@ -1,0 +1,81 @@
+<section class="search-result">
+	<header class="hero">
+		<p class="eyebrow">Search results</p>
+		<h1>Results for “{{ keyword || '...' }}”</h1>
+		<p class="status" *ngIf="loading">Searching music library...</p>
+		<p class="status error" *ngIf="errorMessage">{{ errorMessage }}</p>
+	</header>
+
+	<ng-container *ngIf="!loading && !errorMessage">
+		<section class="group player-panel" *ngIf="results.songs.length > 0">
+			<div class="group-header">
+				<h2>Player</h2>
+				<span>{{ selectedSongIndex + 1 }} / {{ results.songs.length }}</span>
+			</div>
+			<app-player [queue]="playerQueue" [startIndex]="selectedSongIndex"></app-player>
+		</section>
+
+		<section class="group">
+			<div class="group-header">
+				<h2>Songs</h2>
+				<span>{{ results.songs.length }}</span>
+			</div>
+			<div class="cards" *ngIf="results.songs.length > 0; else noSongs">
+				<article
+					class="card song-card"
+					*ngFor="let song of results.songs; let index = index"
+					[class.selected]="index === selectedSongIndex"
+					tabindex="0"
+					role="button"
+					(click)="selectSong(index)"
+					(keyup.enter)="selectSong(index)"
+					(keyup.space)="selectSong(index)"
+				>
+					<img class="cover" [src]="song.coverImage || fallbackCoverImage" [alt]="song.title + ' cover'">
+					<div>
+						<h3>{{ song.title }}</h3>
+						<p>{{ song.artistNames }}</p>
+						<p>{{ song.albumTitle }}</p>
+						<p>{{ song.genre }} • {{ song.tempo }} BPM • {{ formatDuration(song.duration) }}</p>
+					</div>
+				</article>
+			</div>
+			<ng-template #noSongs><p class="empty">No songs found.</p></ng-template>
+		</section>
+
+		<section class="group">
+			<div class="group-header">
+				<h2>Artists</h2>
+				<span>{{ results.artists.length }}</span>
+			</div>
+			<div class="cards" *ngIf="results.artists.length > 0; else noArtists">
+				<article class="card artist-card" *ngFor="let artist of results.artists">
+					<img class="avatar" [src]="artist.image || fallbackCoverImage" [alt]="artist.name + ' image'">
+					<div>
+						<h3>{{ artist.name }}</h3>
+						<p>{{ artist.genre }}</p>
+					</div>
+				</article>
+			</div>
+			<ng-template #noArtists><p class="empty">No artists found.</p></ng-template>
+		</section>
+
+		<section class="group">
+			<div class="group-header">
+				<h2>Albums</h2>
+				<span>{{ results.albums.length }}</span>
+			</div>
+			<div class="cards" *ngIf="results.albums.length > 0; else noAlbums">
+				<article class="card album-card" *ngFor="let album of results.albums">
+					<img class="cover" [src]="album.coverImage || fallbackCoverImage" [alt]="album.title + ' cover'">
+					<div>
+						<h3>{{ album.title }}</h3>
+						<p>{{ album.artistName }}</p>
+						<p>{{ album.genre }} • {{ album.releaseYear }}</p>
+					</div>
+				</article>
+			</div>
+			<ng-template #noAlbums><p class="empty">No albums found.</p></ng-template>
+		</section>
+	</ng-container>
+</section>
