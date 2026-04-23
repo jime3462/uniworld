@@ -22,6 +22,6 @@ export interface PlaylistResponse {
 	name: string;
 	isPublic: boolean;
 	coverImage: string | null;
-	userID: number;
-	songIds: number[];
+	user: User;
+	songs: Song[];
 }

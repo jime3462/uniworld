@@ -32,3 +32,37 @@ main {
   color: var(--light);
   font-size: 1.05rem;
 }
+
+.genres-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem 0;
+}
+
+.genre-card {
+  background: linear-gradient(135deg, rgba(112, 112, 112, 0.3), rgba(80, 80, 80, 0.3));
+  border: 1px solid var(--mid);
+  border-radius: 10px;
+  color: var(--light);
+  font-weight: 600;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+}
+
+.genre-card:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, rgba(140, 140, 140, 0.5), rgba(100, 100, 100, 0.5));
+  border-color: var(--light);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.genre-card:active {
+  transform: scale(0.98);
+}

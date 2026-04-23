@@ -1,25 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Player } from '../../components/player/player';
 import type { Album } from '../../interfaces/Album';
 import type { Artist } from '../../interfaces/Artist';
 import type { Song } from '../../interfaces/Song';
 import { SearchService } from '../../services/search.service';
+import { SidebarPlayerService } from '../../services/sidebar-player.service';
 import type { SearchResultResponse } from '../../interfaces/search-result';
 
 @Component({
   selector: 'app-search-result',
-  imports: [CommonModule, Player],
+  imports: [CommonModule],
   templateUrl: './search-result.html',
   styleUrl: './search-result.scss',
 })
-export class SearchResult implements OnInit {
+export class SearchResult implements OnInit, OnDestroy {
   keyword = '';
   loading = false;
   errorMessage = '';
   selectedSongIndex = 0;
-  playerQueue: Song[] = [];
   readonly fallbackCoverImage =
     "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'%3E%3Crect width='320' height='320' fill='%231f1f1f'/%3E%3Ccircle cx='160' cy='160' r='88' fill='none' stroke='%23707070' stroke-width='16'/%3E%3Ccircle cx='160' cy='160' r='14' fill='%23707070'/%3E%3C/svg%3E";
   results: SearchResultResponse = {
@@ -31,6 +30,7 @@ export class SearchResult implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly searchService: SearchService,
+    private readonly sidebarPlayerService: SidebarPlayerService,
   ) {}
 
   ngOnInit(): void {
@@ -40,13 +40,17 @@ export class SearchResult implements OnInit {
       this.selectedSongIndex = 0;
       if (!keyword) {
         this.results = { songs: [], artists: [], albums: [] };
-        this.playerQueue = [];
+        this.sidebarPlayerService.clearSearchQueue();
         this.errorMessage = 'Enter a keyword to search.';
         return;
       }
 
       this.search(keyword);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.sidebarPlayerService.clearSearchQueue();
   }
 
   private search(keyword: string): void {
@@ -56,11 +60,13 @@ export class SearchResult implements OnInit {
     this.searchService.search(keyword).subscribe({
       next: (results) => {
         this.results = results;
-        this.playerQueue = results.songs.map((song) => this.toPlayerSong(song));
+        const playerQueue = results.songs.map((song) => this.toPlayerSong(song));
+        this.sidebarPlayerService.setSearchQueue(playerQueue, 0);
         this.selectedSongIndex = 0;
         this.loading = false;
       },
       error: () => {
+        this.sidebarPlayerService.clearSearchQueue();
         this.errorMessage = 'Search failed. Please try again.';
         this.loading = false;
       },
@@ -77,6 +83,12 @@ export class SearchResult implements OnInit {
 
   selectSong(index: number): void {
     this.selectedSongIndex = index;
+    this.sidebarPlayerService.setSearchIndex(index);
+  }
+
+  onMediaImageError(event: Event): void {
+    const image = event.target as HTMLImageElement;
+    image.src = this.fallbackCoverImage;
   }
 
   private toPlayerSong(song: SearchResultResponse['songs'][number]): Song {

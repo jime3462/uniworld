@@ -4,8 +4,19 @@
     <h1>Welcome to Uniworld!</h1>
     <p>Explore the world of Music</p>
     <h2>Top Genres</h2>
+    <div class="genres-grid">
+      <button
+        type="button"
+        class="genre-card"
+        *ngFor="let genre of genres"
+        (click)="searchByGenre(genre)"
+        [attr.aria-label]="'Search for ' + genre"
+      >
+        {{ genre }}
+      </button>
+    </div>
+
     <h2>Top Artists</h2>
     <h2>Top Albums</h2>
-    <h2>Top Songs</h2>
     </div>
 </main>

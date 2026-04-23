@@ -16,6 +16,7 @@ export interface AuthResponse {
 export class AuthService {
   private readonly baseUrl = 'http://localhost:8080/api/auth';
   private readonly tokenStorageKey = 'uniworld_token';
+  private readonly roleStorageKey = 'uniworld_role';
 
   constructor(private readonly http: HttpClient) {}
 
@@ -26,13 +27,13 @@ export class AuthService {
   }): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.baseUrl}/register`, payload)
-      .pipe(tap((response) => this.storeToken(response.token)));
+      .pipe(tap((response) => this.storeAuthSession(response)));
   }
 
   login(payload: { email: string; password: string }): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.baseUrl}/login`, payload)
-      .pipe(tap((response) => this.storeToken(response.token)));
+      .pipe(tap((response) => this.storeAuthSession(response)));
   }
 
   me(): Observable<AuthResponse> {
@@ -41,6 +42,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(this.tokenStorageKey);
+    localStorage.removeItem(this.roleStorageKey);
   }
 
   getToken(): string | null {
@@ -51,10 +53,48 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  private storeToken(token: string | null): void {
-    if (!token) {
-      return;
+  isAdmin(): boolean {
+    return this.getRole() === 'ADMIN';
+  }
+
+  getRole(): string | null {
+    const storedRole = localStorage.getItem(this.roleStorageKey);
+    if (storedRole) {
+      return storedRole;
     }
-    localStorage.setItem(this.tokenStorageKey, token);
+
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+
+    return this.extractRoleFromToken(token);
+  }
+
+  private storeAuthSession(response: AuthResponse): void {
+    if (response.token) {
+      localStorage.setItem(this.tokenStorageKey, response.token);
+    }
+
+    if (response.role) {
+      localStorage.setItem(this.roleStorageKey, response.role.toUpperCase());
+    }
+  }
+
+  private extractRoleFromToken(token: string): string | null {
+    try {
+      const payloadPart = token.split('.')[1];
+      if (!payloadPart) {
+        return null;
+      }
+
+      const normalizedPayload = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
+      const decodedPayload = atob(normalizedPayload);
+      const payload = JSON.parse(decodedPayload) as { role?: string };
+
+      return payload.role ? payload.role.toUpperCase() : null;
+    } catch {
+      return null;
+    }
   }
 }

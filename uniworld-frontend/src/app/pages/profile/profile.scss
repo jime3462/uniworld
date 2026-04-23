@@ -1,0 +1,82 @@
+:host {
+  display: block;
+  width: 100%;
+  color: var(--light);
+}
+
+.profile-page {
+  border: 1px solid var(--mid);
+  border-radius: 14px;
+  background: rgba(31, 31, 31, 0.85);
+  padding: 1.25rem;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3);
+}
+
+.heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.heading-row h1 {
+  margin: 0;
+}
+
+.home-btn {
+  background: transparent;
+  color: var(--light);
+  border: 1px solid var(--mid);
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  cursor: pointer;
+}
+
+.home-btn:hover {
+  border-color: var(--light);
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(112, 112, 112, 0.35);
+  border-radius: 12px;
+  padding: 1rem;
+  background: rgba(18, 18, 18, 0.75);
+}
+
+.avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid var(--mid);
+}
+
+.details h2 {
+  margin: 0;
+  margin-bottom: 0.25rem;
+}
+
+.details p {
+  margin: 0;
+  color: var(--mid);
+}
+
+.role {
+  margin-top: 0.45rem !important;
+  color: var(--light) !important;
+  font-weight: 600;
+}
+
+.status {
+  margin: 0;
+  margin-bottom: 0.8rem;
+  color: var(--mid);
+}
+
+.status.error {
+  color: #ff9b9b;
+}

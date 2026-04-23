@@ -3,11 +3,55 @@
 </div>
 <div class="menu">
   <ul>
-    <li><a href="#">Home</a></li>
+    <li><a routerLink="/home">Home</a></li>
     <li><a href="#">Genres</a></li>
+    <li *ngIf="authService.isAdmin()"><a href="#">Upload Song</a></li>
   </ul>
 </div>
 <div class="playlist">
-    <h3>My Favorite Playlist</h3>
-    <button class="create-playlist">+ Create Playlist</button>
+    <h3>My Playlists</h3>
+    <button type="button" class="create-playlist" (click)="openCreatePlaylistModal()">+ Create Playlist</button>
+    <ul class="playlists-list">
+        <li *ngFor="let playlist of playlists" (click)="selectPlaylist(playlist)" [class.active]="playlist === selectedPlaylist" class="playlist-item">
+            <div class="playlist-card">
+                <img *ngIf="playlist.coverImage" [src]="playlist.coverImage" [alt]="playlist.name" class="playlist-img" />
+                <div *ngIf="!playlist.coverImage" class="playlist-img-placeholder">
+                    <span>🎵</span>
+                </div>
+                <div class="playlist-info">
+                    <p class="playlist-name">{{ playlist.name }}</p>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Create New Playlist</h2>
+      <button type="button" class="close-btn" (click)="closeModal()">✕</button>
+    </div>
+    <form (ngSubmit)="createPlaylist()" class="modal-form">
+      <div class="form-group">
+        <label for="playlistName">Playlist Name</label>
+        <input
+          id="playlistName"
+          type="text"
+          [(ngModel)]="playlistName"
+          name="playlistName"
+          placeholder="Enter playlist name"
+          autofocus
+          [disabled]="isSubmitting"
+        />
+      </div>
+      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="closeModal()" [disabled]="isSubmitting">Cancel</button>
+        <button type="submit" class="btn-create" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Creating...' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

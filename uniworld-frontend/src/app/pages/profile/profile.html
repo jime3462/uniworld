@@ -1,0 +1,18 @@
+<section class="profile-page">
+  <header class="heading-row">
+    <h1>My Profile</h1>
+    <button type="button" class="home-btn" (click)="goHome()">Back to Home</button>
+  </header>
+
+  <p *ngIf="loading" class="status">Loading profile...</p>
+  <p *ngIf="errorMessage" class="status error">{{ errorMessage }}</p>
+
+  <article *ngIf="!loading && !errorMessage" class="card">
+    <img class="avatar" [src]="profileImageUrl" alt="Profile Picture">
+    <div class="details">
+      <h2>{{ userName }}</h2>
+      <p>{{ userEmail }}</p>
+      <p class="role">{{ userRole }}</p>
+    </div>
+  </article>
+</section>
