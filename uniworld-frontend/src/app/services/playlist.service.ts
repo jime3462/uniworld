@@ -25,6 +25,13 @@ export class PlaylistService {
     );
   }
 
+  getById(playlistId: number): Observable<Playlist> {
+    return this.http.get<PlaylistResponse>(`${this.baseUrl}/${playlistId}`).pipe(
+      map((playlist) => this.toPlaylistModel(playlist)),
+      tap((playlist) => this.syncSelectedPlaylist(playlist)),
+    );
+  }
+
   update(playlistId: number, request: PlaylistRequest): Observable<Playlist> {
     return this.http.put<PlaylistResponse>(`${this.baseUrl}/${playlistId}`, request).pipe(
       map((playlist) => this.toPlaylistModel(playlist)),

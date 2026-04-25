@@ -1,0 +1,52 @@
+<section class="playlist-page">
+  <header class="hero" *ngIf="playlist">
+    <img
+      class="playlist-cover"
+      [src]="playlist.coverImage || fallbackCoverImage"
+      [alt]="playlist.name + ' cover'"
+      (error)="onMediaImageError($event)"
+    >
+    <div class="hero-text">
+      <p class="eyebrow">Playlist</p>
+      <h1>{{ playlist.name }}</h1>
+      <p class="status" *ngIf="loading">Loading songs...</p>
+      <p class="status error" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <p class="status" *ngIf="!loading && !errorMessage">{{ songs.length }} song(s)</p>
+    </div>
+  </header>
+
+  <p class="status error" *ngIf="!playlist && errorMessage">{{ errorMessage }}</p>
+
+  <section class="table-wrap" *ngIf="playlist && !loading && !errorMessage">
+    <table class="songs-table" *ngIf="songs.length > 0; else noSongs">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Artist</th>
+          <th>Album</th>
+          <th>Genre</th>
+          <th>Tempo</th>
+          <th>Duration</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let song of songs; let index = index">
+          <td>{{ song.title }}</td>
+          <td>{{ song.artists[0]?.name || 'Unknown artist' }}</td>
+          <td>{{ song.album.title || 'Unknown album' }}</td>
+          <td>{{ song.genre || 'Unknown genre' }}</td>
+          <td>{{ song.tempo || 0 }} BPM</td>
+          <td>{{ formatDuration(song.duration || 0) }}</td>
+          <td>
+            <button type="button" class="play-button" (click)="playSong(index)">Play</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #noSongs>
+      <p class="empty">No songs</p>
+    </ng-template>
+  </section>
+</section>
