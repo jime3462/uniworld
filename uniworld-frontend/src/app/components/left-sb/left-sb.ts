@@ -33,8 +33,17 @@ export class LeftSb implements OnInit {
     this.playlistService.getAll().subscribe({
       next: (playlists) => {
         this.playlists = playlists;
+        const selectedPlaylist = this.playlistService.getSelectedPlaylistSnapshot();
+        if (selectedPlaylist) {
+          this.selectedPlaylist = playlists.find((playlist) => playlist.playlistID === selectedPlaylist.playlistID) ?? null;
+        }
+
         if (playlists.length > 0 && !this.selectedPlaylist) {
           this.selectedPlaylist = playlists[0];
+        }
+
+        if (this.selectedPlaylist) {
+          this.playlistService.selectPlaylist(this.selectedPlaylist);
         }
       },
       error: () => {
@@ -46,6 +55,7 @@ export class LeftSb implements OnInit {
 
   selectPlaylist(playlist: Playlist): void {
     this.selectedPlaylist = playlist;
+    this.playlistService.selectPlaylist(playlist);
   }
 
   openCreatePlaylistModal(): void {

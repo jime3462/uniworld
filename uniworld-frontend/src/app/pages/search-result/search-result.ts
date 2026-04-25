@@ -1,10 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import type { Album } from '../../interfaces/Album';
 import type { Artist } from '../../interfaces/Artist';
+import type { Playlist } from '../../interfaces/Playlist';
 import type { Song } from '../../interfaces/Song';
 import { SearchService } from '../../services/search.service';
+import { PlaylistService } from '../../services/playlist.service';
 import { SidebarPlayerService } from '../../services/sidebar-player.service';
 import type { SearchResultResponse } from '../../interfaces/search-result';
 
@@ -18,7 +21,11 @@ export class SearchResult implements OnInit, OnDestroy {
   keyword = '';
   loading = false;
   errorMessage = '';
+  playlistActionMessage = '';
   selectedSongIndex = 0;
+  selectedPlaylist: Playlist | null = null;
+  addingSongIds = new Set<number>();
+  private playlistSelectionSubscription?: Subscription;
   readonly fallbackCoverImage =
     "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'%3E%3Crect width='320' height='320' fill='%231f1f1f'/%3E%3Ccircle cx='160' cy='160' r='88' fill='none' stroke='%23707070' stroke-width='16'/%3E%3Ccircle cx='160' cy='160' r='14' fill='%23707070'/%3E%3C/svg%3E";
   results: SearchResultResponse = {
@@ -30,14 +37,20 @@ export class SearchResult implements OnInit, OnDestroy {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly searchService: SearchService,
+    private readonly playlistService: PlaylistService,
     private readonly sidebarPlayerService: SidebarPlayerService,
   ) {}
 
   ngOnInit(): void {
+    this.playlistSelectionSubscription = this.playlistService.selectedPlaylist$.subscribe((playlist) => {
+      this.selectedPlaylist = playlist;
+    });
+
     this.route.queryParamMap.subscribe((params) => {
       const keyword = params.get('keyword')?.trim() ?? '';
       this.keyword = keyword;
       this.selectedSongIndex = 0;
+      this.playlistActionMessage = '';
       if (!keyword) {
         this.results = { songs: [], artists: [], albums: [] };
         this.sidebarPlayerService.clearSearchQueue();
@@ -50,6 +63,7 @@ export class SearchResult implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.playlistSelectionSubscription?.unsubscribe();
     this.sidebarPlayerService.clearSearchQueue();
   }
 
@@ -84,6 +98,38 @@ export class SearchResult implements OnInit, OnDestroy {
   selectSong(index: number): void {
     this.selectedSongIndex = index;
     this.sidebarPlayerService.setSearchIndex(index);
+  }
+
+  addSongToSelectedPlaylist(song: SearchResultResponse['songs'][number], event: Event): void {
+    event.stopPropagation();
+
+    if (!this.selectedPlaylist) {
+      this.playlistActionMessage = 'Select a playlist in the left sidebar first.';
+      return;
+    }
+
+    if (this.addingSongIds.has(song.songID)) {
+      return;
+    }
+
+    this.addingSongIds.add(song.songID);
+    this.playlistActionMessage = '';
+
+    this.playlistService.addSongToPlaylist(this.selectedPlaylist, song.songID).subscribe({
+      next: (updatedPlaylist) => {
+        this.addingSongIds.delete(song.songID);
+        this.selectedPlaylist = updatedPlaylist;
+        this.playlistActionMessage = `Added "${song.title}" to ${updatedPlaylist.name}.`;
+      },
+      error: () => {
+        this.addingSongIds.delete(song.songID);
+        this.playlistActionMessage = 'Failed to add song to playlist. Please try again.';
+      },
+    });
+  }
+
+  isAddingSong(songId: number): boolean {
+    return this.addingSongIds.has(songId);
   }
 
   onMediaImageError(event: Event): void {

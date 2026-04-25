@@ -4,6 +4,8 @@
 		<h1>Results for “{{ keyword || '...' }}”</h1>
 		<p class="status" *ngIf="loading">Searching music library...</p>
 		<p class="status error" *ngIf="errorMessage">{{ errorMessage }}</p>
+		<p class="status" *ngIf="!loading && !errorMessage && selectedPlaylist">Selected playlist: {{ selectedPlaylist.name }}</p>
+		<p class="status error" *ngIf="playlistActionMessage">{{ playlistActionMessage }}</p>
 	</header>
 
 	<ng-container *ngIf="!loading && !errorMessage">
@@ -34,6 +36,14 @@
 						<p>{{ song.artistNames || 'Unknown artist' }}</p>
 						<p>{{ song.albumTitle || 'Unknown album' }}</p>
 						<p>{{ song.genre || 'Unknown genre' }} • {{ song.tempo || 0 }} BPM • {{ formatDuration(song.duration || 0) }}</p>
+						<button
+							type="button"
+							class="add-button"
+							(click)="addSongToSelectedPlaylist(song, $event)"
+							[disabled]="!selectedPlaylist || isAddingSong(song.songID)"
+						>
+							{{ isAddingSong(song.songID) ? 'Adding...' : 'Add to playlist' }}
+						</button>
 					</div>
 				</article>
 			</div>
