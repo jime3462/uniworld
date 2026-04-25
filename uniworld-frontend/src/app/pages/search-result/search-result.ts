@@ -53,7 +53,6 @@ export class SearchResult implements OnInit, OnDestroy {
       this.playlistActionMessage = '';
       if (!keyword) {
         this.results = { songs: [], artists: [], albums: [] };
-        this.sidebarPlayerService.clearSearchQueue();
         this.errorMessage = 'Enter a keyword to search.';
         return;
       }
@@ -64,7 +63,6 @@ export class SearchResult implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.playlistSelectionSubscription?.unsubscribe();
-    this.sidebarPlayerService.clearSearchQueue();
   }
 
   private search(keyword: string): void {
@@ -80,7 +78,6 @@ export class SearchResult implements OnInit, OnDestroy {
         this.loading = false;
       },
       error: () => {
-        this.sidebarPlayerService.clearSearchQueue();
         this.errorMessage = 'Search failed. Please try again.';
         this.loading = false;
       },

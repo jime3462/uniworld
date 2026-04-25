@@ -12,19 +12,19 @@ import { RightSb } from './components/right-sb/right-sb';
   styleUrl: './app.scss'
 })
 export class App {
-  showSidebars = true;
+  showLeftSidebar = true;
 
   constructor(private readonly router: Router) {
-    this.updateSidebarVisibility(this.router.url);
+    this.updateLayoutVisibility(this.router.url);
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event) => {
         const navigationEnd = event as NavigationEnd;
-        this.updateSidebarVisibility(navigationEnd.urlAfterRedirects);
+        this.updateLayoutVisibility(navigationEnd.urlAfterRedirects);
       });
   }
 
-  private updateSidebarVisibility(url: string): void {
-    this.showSidebars = !(url.startsWith('/signin') || url.startsWith('/signup'));
+  private updateLayoutVisibility(url: string): void {
+    this.showLeftSidebar = !(url.startsWith('/signin') || url.startsWith('/signup'));
   }
 }

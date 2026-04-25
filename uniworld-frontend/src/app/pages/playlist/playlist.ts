@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import type { Playlist } from '../../interfaces/Playlist';
 import type { Song } from '../../interfaces/Song';
 import { PlaylistService } from '../../services/playlist.service';
@@ -62,13 +62,12 @@ export class PlaylistPage implements OnInit {
             return;
           }
 
-          const songRequests = songIds.map((songId) =>
-            this.songService.getById(songId).pipe(catchError(() => of(null))),
-          );
-
-          forkJoin(songRequests).subscribe({
-            next: (songs) => {
-              this.songs = songs.filter((song): song is Song => song !== null);
+          this.songService.getAll().subscribe({
+            next: (allSongs) => {
+              const songsById = new Map(allSongs.map((song) => [song.songID, song]));
+              this.songs = songIds
+                .map((songId) => songsById.get(songId))
+                .filter((song): song is Song => song !== undefined);
               this.loading = false;
             },
             error: () => {
