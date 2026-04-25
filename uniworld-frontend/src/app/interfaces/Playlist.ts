@@ -6,8 +6,10 @@ export interface Playlist {
 	name: string;
 	isPublic: boolean;
 	coverImage: string | null;
-	user: User;
-	songs: Song[];
+	userID?: number;
+	songIds?: number[];
+	user?: User;
+	songs?: Song[];
 }
 
 export interface PlaylistRequest {
@@ -22,6 +24,8 @@ export interface PlaylistResponse {
 	name: string;
 	isPublic: boolean;
 	coverImage: string | null;
-	user: User;
-	songs: Song[];
+	userID?: number;
+	songIds?: number[];
+	user?: User;
+	songs?: Song[];
 }

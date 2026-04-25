@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { PlaylistService } from '../../services/playlist.service';
 import type { Playlist } from '../../interfaces/Playlist';
@@ -23,6 +23,7 @@ export class LeftSb implements OnInit {
   constructor(
     public readonly authService: AuthService,
     private readonly playlistService: PlaylistService,
+    private readonly router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -33,8 +34,17 @@ export class LeftSb implements OnInit {
     this.playlistService.getAll().subscribe({
       next: (playlists) => {
         this.playlists = playlists;
+        const selectedPlaylist = this.playlistService.getSelectedPlaylistSnapshot();
+        if (selectedPlaylist) {
+          this.selectedPlaylist = playlists.find((playlist) => playlist.playlistID === selectedPlaylist.playlistID) ?? null;
+        }
+
         if (playlists.length > 0 && !this.selectedPlaylist) {
           this.selectedPlaylist = playlists[0];
+        }
+
+        if (this.selectedPlaylist) {
+          this.playlistService.selectPlaylist(this.selectedPlaylist);
         }
       },
       error: () => {
@@ -46,6 +56,8 @@ export class LeftSb implements OnInit {
 
   selectPlaylist(playlist: Playlist): void {
     this.selectedPlaylist = playlist;
+    this.playlistService.selectPlaylist(playlist);
+    void this.router.navigate(['/playlist', playlist.playlistID]);
   }
 
   openCreatePlaylistModal(): void {
