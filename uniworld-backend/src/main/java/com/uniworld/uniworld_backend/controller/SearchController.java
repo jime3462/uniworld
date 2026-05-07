@@ -65,7 +65,7 @@ public class SearchController {
         return new SearchResultResponse(songs, artists, albums);
     }
 
-    private boolean matchesSong(Song song, String keyword) {
+    public boolean matchesSong(Song song, String keyword) {
         String albumTitle = song.getAlbum() != null ? song.getAlbum().getTitle() : "";
         String artistNames = song.getArtists() == null
                 ? ""
