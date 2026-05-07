@@ -23,6 +23,12 @@ export class Profile implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.loading = false;
+      void this.router.navigate(['/signin']);
+      return;
+    }
+
     this.authService.me().subscribe({
       next: (user) => {
         this.userName = user.name?.trim() || 'User';

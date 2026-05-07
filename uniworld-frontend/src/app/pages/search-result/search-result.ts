@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Search } from '../../components/search/search';
 import { Subscription } from 'rxjs';
 import type { Album } from '../../interfaces/Album';
 import type { Artist } from '../../interfaces/Artist';
@@ -13,7 +14,7 @@ import type { SearchResultResponse } from '../../interfaces/search-result';
 
 @Component({
   selector: 'app-search-result',
-  imports: [CommonModule],
+  imports: [CommonModule, Search],
   templateUrl: './search-result.html',
   styleUrl: './search-result.scss',
 })

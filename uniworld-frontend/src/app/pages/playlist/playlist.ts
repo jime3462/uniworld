@@ -7,7 +7,6 @@ import type { Playlist } from '../../interfaces/Playlist';
 import type { Song } from '../../interfaces/Song';
 import { PlaylistService } from '../../services/playlist.service';
 import { SidebarPlayerService } from '../../services/sidebar-player.service';
-import { SongService } from '../../services/song.service';
 
 @Component({
   selector: 'app-playlist-page',
@@ -17,6 +16,7 @@ import { SongService } from '../../services/song.service';
 })
 export class PlaylistPage implements OnInit {
   loading = true;
+  removingSong = false;
   errorMessage = '';
   playlist: Playlist | null = null;
   songs: Song[] = [];
@@ -26,7 +26,6 @@ export class PlaylistPage implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly playlistService: PlaylistService,
-    private readonly songService: SongService,
     private readonly sidebarPlayerService: SidebarPlayerService,
   ) {}
 
@@ -54,27 +53,9 @@ export class PlaylistPage implements OnInit {
           if (!playlist) {
             return;
           }
-
           this.playlist = playlist;
-          const songIds = playlist.songIds ?? [];
-          if (songIds.length === 0) {
-            this.loading = false;
-            return;
-          }
-
-          this.songService.getAll().subscribe({
-            next: (allSongs) => {
-              const songsById = new Map(allSongs.map((song) => [song.songID, song]));
-              this.songs = songIds
-                .map((songId) => songsById.get(songId))
-                .filter((song): song is Song => song !== undefined);
-              this.loading = false;
-            },
-            error: () => {
-              this.errorMessage = 'Failed to load songs for this playlist.';
-              this.loading = false;
-            },
-          });
+          this.songs = playlist.songs ?? [];
+          this.loading = false;
         },
         error: () => {
           this.errorMessage = 'Failed to load playlist.';
@@ -102,5 +83,31 @@ export class PlaylistPage implements OnInit {
     }
 
     this.sidebarPlayerService.setSearchQueue(this.songs, songIndex);
+  }
+
+  removeSong(songIndex: number): void {
+    if (!this.playlist || this.songs.length === 0) {
+      return;
+    }
+
+    const songId = this.songs[songIndex]?.songID;
+    if (!songId) {
+      return;
+    }
+
+    this.removingSong = true;
+    this.errorMessage = '';
+
+    this.playlistService.removeSongFromPlaylist(this.playlist, songId).subscribe({
+      next: (updatedPlaylist) => {
+        this.playlist = updatedPlaylist;
+        this.songs = updatedPlaylist.songs ?? [];
+        this.removingSong = false;
+      },
+      error: () => {
+        this.errorMessage = 'Unable to remove the song from the playlist.';
+        this.removingSong = false;
+      },
+    });
   }
 }

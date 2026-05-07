@@ -1,0 +1,43 @@
+classDiagram
+direction LR
+
+class User {
+  +Long userID
+  +String name
+  +String email
+  +String role
+}
+
+class Playlist {
+  +Long playlistID
+  +String name
+  +Boolean isPublic
+  +String coverImage
+}
+
+class Song {
+  +Long songID
+  +String title
+  +String genre
+  +int tempo
+  +int duration
+}
+
+class Album {
+  +Long albumID
+  +String title
+  +String coverImage
+}
+
+class Artist {
+  +Long artistID
+  +String name
+  +String genre
+}
+
+User "1" --> "0..*" Playlist : owns
+Playlist "0..*" --> "0..*" Song : songs
+Song "0..*" --> "1" Album : album
+Album "1" --> "0..*" Song : songs
+Song "0..*" --> "0..*" Artist : artists
+Artist "1" --> "0..*" Album : albums

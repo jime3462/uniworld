@@ -5,6 +5,7 @@ import type { Song } from '../interfaces/Song';
 interface SidebarPlayerState {
   queue: Song[];
   startIndex: number;
+  autoplay: boolean;
 }
 
 @Injectable({
@@ -14,6 +15,7 @@ export class SidebarPlayerService {
   private readonly stateSubject = new BehaviorSubject<SidebarPlayerState>({
     queue: [],
     startIndex: 0,
+    autoplay: false,
   });
 
   readonly state$ = this.stateSubject.asObservable();
@@ -25,7 +27,7 @@ export class SidebarPlayerService {
     }
 
     const boundedStartIndex = Math.max(0, Math.min(startIndex, queue.length - 1));
-    this.stateSubject.next({ queue, startIndex: boundedStartIndex });
+    this.stateSubject.next({ queue, startIndex: boundedStartIndex, autoplay: false });
   }
 
   setSearchIndex(startIndex: number): void {
@@ -38,10 +40,11 @@ export class SidebarPlayerService {
     this.stateSubject.next({
       queue: currentState.queue,
       startIndex: boundedStartIndex,
+      autoplay: true,
     });
   }
 
   clearSearchQueue(): void {
-    this.stateSubject.next({ queue: [], startIndex: 0 });
+    this.stateSubject.next({ queue: [], startIndex: 0, autoplay: false });
   }
 }

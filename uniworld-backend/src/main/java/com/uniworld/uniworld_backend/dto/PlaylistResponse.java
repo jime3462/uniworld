@@ -8,6 +8,7 @@ public record PlaylistResponse(
         Boolean isPublic,
         String coverImage,
         Long userID,
-        List<Long> songIds
+        List<Long> songIds,
+        List<PlaylistSongDTO> songs
 ) {
 }

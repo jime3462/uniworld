@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, throwError } from 'rxjs';
 
 export interface AuthResponse {
   token: string | null;
@@ -30,13 +30,17 @@ export class AuthService {
       .pipe(tap((response) => this.storeAuthSession(response)));
   }
 
-  login(payload: { email: string; password: string }): Observable<AuthResponse> {
+  login(payload: { identifier: string; password: string }): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.baseUrl}/login`, payload)
       .pipe(tap((response) => this.storeAuthSession(response)));
   }
 
   me(): Observable<AuthResponse> {
+    if (!this.getToken()) {
+      return throwError(() => new Error('No authentication token'));
+    }
+
     return this.http.get<AuthResponse>(`${this.baseUrl}/me`);
   }
 

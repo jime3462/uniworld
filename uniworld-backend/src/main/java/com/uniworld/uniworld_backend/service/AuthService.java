@@ -68,18 +68,18 @@ public class AuthService {
     }
 
     public AuthResponse login(AuthRequest request) {
-        if (request.email() == null || request.email().isBlank() || request.password() == null || request.password().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email and password are required");
+        if (request.identifier() == null || request.identifier().isBlank() || request.password() == null || request.password().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email/username and password are required");
         }
 
-        String normalizedEmail = request.email().trim().toLowerCase();
+        String identifier = request.identifier().trim();
+        User user = userRepository.findByEmail(identifier.toLowerCase())
+                .or(() -> userRepository.findByName(identifier))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
 
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(normalizedEmail, request.password())
+            new UsernamePasswordAuthenticationToken(user.getEmail(), request.password())
         );
-
-        User user = userRepository.findByEmail(normalizedEmail)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
 
         String token = jwtService.generateToken(Map.of("role", user.getRole(), "userID", user.getUserID()),
                 org.springframework.security.core.userdetails.User

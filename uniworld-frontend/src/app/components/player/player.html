@@ -1,76 +1,72 @@
 <div class="player card p-10">
-    <ng-container *ngIf="currentSong as song; else noSongs">
-        <div class="header">
-            <img
-                class="cover"
-                [src]="albumCoverImage"
-                [alt]="song.title + ' album cover'"
-                (error)="onCoverImageError($event)"
-            >
-            <div class="meta">
-                <h3 class="name">{{ song.title }}</h3>
-                <span class="artist">{{ currentArtists }}</span>
-                <p class="genre" *ngIf="song.genre">{{ song.genre }}</p>
-            </div>
+    <div class="header">
+        <img
+            class="cover"
+            [src]="albumCoverImage"
+            [alt]="currentSong ? currentSong.title + ' album cover' : 'No song selected'"
+            (error)="onCoverImageError($event)"
+        >
+        <div class="meta">
+            <h3 class="name">{{ currentSong?.title || '—' }}</h3>
+            <span class="artist">{{ currentArtists }}</span>
+            <p class="genre" *ngIf="currentSong?.genre">{{ currentSong!.genre }}</p>
         </div>
+    </div>
 
-        <audio
-            #audioPlayer
-            [src]="song.audioFile"
-            preload="metadata"
-            (timeupdate)="onTimeUpdate()"
-            (loadedmetadata)="onLoadedMetadata()"
-            (ended)="onAudioEnded()"
-        ></audio>
+    <audio
+        *ngIf="currentSong"
+        #audioPlayer
+        [src]="currentSong.audioFile"
+        preload="metadata"
+        (timeupdate)="onTimeUpdate()"
+        (loadedmetadata)="onLoadedMetadata()"
+        (ended)="onAudioEnded()"
+    ></audio>
 
-        <div class="progress-wrap">
-            <input
-                class="progress"
-                type="range"
-                min="0"
-                [max]="durationSeconds || 0"
-                [value]="currentTimeSeconds"
-                (input)="onSeek($event)"
-            >
-            <div class="time-row">
-                <span>{{ formattedCurrentTime }}</span>
-                <span>{{ formattedDuration }}</span>
-            </div>
+    <div class="progress-wrap">
+        <input
+            class="progress"
+            type="range"
+            min="0"
+            [max]="durationSeconds || 0"
+            [value]="currentTimeSeconds"
+            (input)="onSeek($event)"
+            [disabled]="!currentSong"
+        >
+        <div class="time-row">
+            <span>{{ formattedCurrentTime }}</span>
+            <span>{{ formattedDuration }}</span>
         </div>
+    </div>
 
-        <div class="buttons">
-            <button type="button" class="btn" (click)="previousSong()">Previous</button>
-            <button type="button" class="btn primary" (click)="togglePlayPause()">
-                {{ isPlaying ? 'Pause' : 'Play' }}
-            </button>
-            <button type="button" class="btn" (click)="nextSong()">Next</button>
-        </div>
+    <div class="buttons">
+        <button type="button" class="btn" (click)="previousSong()" [disabled]="!currentSong">Previous</button>
+        <button type="button" class="btn primary" (click)="togglePlayPause()" [disabled]="!currentSong">
+            {{ isPlaying ? 'Pause' : 'Play' }}
+        </button>
+        <button type="button" class="btn" (click)="nextSong()" [disabled]="!currentSong">Next</button>
+    </div>
 
-        <div class="modes">
-            <button
-                type="button"
-                class="btn mode"
-                [class.active]="isShuffleEnabled"
-                (click)="toggleShuffle()"
-                [title]="shuffleButtonTitle"
-                aria-label="Toggle shuffle"
-            >
-                S {{ isShuffleEnabled ? 'On' : 'Off' }}
-            </button>
-            <button
-                type="button"
-                class="btn mode"
-                [class.active]="repeatMode !== 'off'"
-                (click)="cycleRepeatMode()"
-                [title]="repeatButtonTitle"
-                aria-label="Cycle repeat mode"
-            >
-                R {{ repeatButtonLabel.replace('Repeat: ', '') }}
-            </button>
-        </div>
-    </ng-container>
-
-    <ng-template #noSongs>
-        <p class="empty">No songs loaded. Bind songs to the player queue.</p>
-    </ng-template>
+    <div class="modes">
+        <button
+            type="button"
+            class="btn mode"
+            [class.active]="isShuffleEnabled"
+            (click)="toggleShuffle()"
+            [title]="shuffleButtonTitle"
+            aria-label="Toggle shuffle"
+        >
+            S {{ isShuffleEnabled ? 'On' : 'Off' }}
+        </button>
+        <button
+            type="button"
+            class="btn mode"
+            [class.active]="repeatMode !== 'off'"
+            (click)="cycleRepeatMode()"
+            [title]="repeatButtonTitle"
+            aria-label="Cycle repeat mode"
+        >
+            R {{ repeatButtonLabel.replace('Repeat: ', '') }}
+        </button>
+    </div>
 </div>

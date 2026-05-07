@@ -15,7 +15,7 @@ export class App {
   showLeftSidebar = true;
 
   constructor(private readonly router: Router) {
-    this.updateLayoutVisibility(this.router.url);
+    this.updateLayoutVisibility(window.location.pathname);
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event) => {

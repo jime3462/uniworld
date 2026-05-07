@@ -15,9 +15,7 @@
         <li *ngFor="let playlist of playlists" (click)="selectPlaylist(playlist)" [class.active]="playlist === selectedPlaylist" class="playlist-item">
             <div class="playlist-card">
                 <img *ngIf="playlist.coverImage" [src]="playlist.coverImage" [alt]="playlist.name" class="playlist-img" />
-                <div *ngIf="!playlist.coverImage" class="playlist-img-placeholder">
-                    <span>🎵</span>
-                </div>
+                <img *ngIf="!playlist.coverImage" src="assets/logo/colored-logo.png" [alt]="playlist.name" class="playlist-img" />
                 <div class="playlist-info">
                     <p class="playlist-name">{{ playlist.name }}</p>
                 </div>
