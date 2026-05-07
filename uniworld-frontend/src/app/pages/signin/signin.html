@@ -4,8 +4,8 @@
 		<p class="subtitle">Welcome back to Uniworld.</p>
 
 		<form class="signin-form" (ngSubmit)="onSubmit()">
-			<label for="email">Email</label>
-			<input id="email" type="email" name="email" autocomplete="email" [(ngModel)]="email" required />
+			<label for="identifier">Email or Username</label>
+			<input id="identifier" type="text" name="identifier" autocomplete="username" [(ngModel)]="identifier" required />
 
 			<label for="password">Password</label>
 			<input id="password" type="password" name="password" autocomplete="current-password" [(ngModel)]="password" required />

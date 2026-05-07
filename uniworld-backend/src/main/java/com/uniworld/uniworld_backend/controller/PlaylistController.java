@@ -1,13 +1,19 @@
 package com.uniworld.uniworld_backend.controller;
 
+import com.uniworld.uniworld_backend.Album;
+import com.uniworld.uniworld_backend.Artist;
 import com.uniworld.uniworld_backend.Playlist;
 import com.uniworld.uniworld_backend.Song;
 import com.uniworld.uniworld_backend.User;
 import com.uniworld.uniworld_backend.dto.PlaylistRequest;
 import com.uniworld.uniworld_backend.dto.PlaylistResponse;
+import com.uniworld.uniworld_backend.dto.PlaylistSongAlbumDTO;
+import com.uniworld.uniworld_backend.dto.PlaylistSongArtistDTO;
+import com.uniworld.uniworld_backend.dto.PlaylistSongDTO;
 import com.uniworld.uniworld_backend.repository.PlaylistRepository;
 import com.uniworld.uniworld_backend.repository.SongRepository;
 import com.uniworld.uniworld_backend.repository.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -23,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+@Transactional
 @RestController
 @RequestMapping("/api/playlists")
 public class PlaylistController {
@@ -101,6 +108,10 @@ public class PlaylistController {
     }
 
     private User getCurrentUser(Authentication authentication) {
+        if (authentication == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication is required");
+        }
+
         return userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
@@ -124,9 +135,9 @@ public class PlaylistController {
     }
 
     private PlaylistResponse toResponse(Playlist playlist) {
-        List<Long> songIds = playlist.getSongs() == null
-                ? List.of()
-                : playlist.getSongs().stream().map(Song::getSongID).toList();
+        List<Song> songs = playlist.getSongs() == null ? List.of() : playlist.getSongs();
+        List<Long> songIds = songs.stream().map(Song::getSongID).toList();
+        List<PlaylistSongDTO> songDTOs = songs.stream().map(this::toSongDTO).toList();
 
         return new PlaylistResponse(
                 playlist.getPlaylistID(),
@@ -134,7 +145,33 @@ public class PlaylistController {
                 playlist.getIsPublic(),
                 playlist.getCoverImage(),
                 playlist.getUser().getUserID(),
-                songIds
+                songIds,
+                songDTOs
         );
+    }
+
+    private PlaylistSongDTO toSongDTO(Song song) {
+        PlaylistSongAlbumDTO albumDTO = null;
+        Album album = song.getAlbum();
+        if (album != null) {
+            PlaylistSongArtistDTO albumArtistDTO = null;
+            Artist albumArtist = album.getArtist();
+            if (albumArtist != null) {
+                albumArtistDTO = new PlaylistSongArtistDTO(
+                        albumArtist.getArtistID(), albumArtist.getName(),
+                        albumArtist.getGenre(), albumArtist.getImage());
+            }
+            albumDTO = new PlaylistSongAlbumDTO(
+                    album.getAlbumID(), album.getTitle(), albumArtistDTO,
+                    album.getGenre(), album.getReleaseYear(), album.getCoverImage());
+        }
+
+        List<PlaylistSongArtistDTO> artistDTOs = song.getArtists() == null ? List.of()
+                : song.getArtists().stream().map(a -> new PlaylistSongArtistDTO(
+                        a.getArtistID(), a.getName(), a.getGenre(), a.getImage())).toList();
+
+        return new PlaylistSongDTO(song.getSongID(), song.getTitle(), albumDTO, artistDTOs,
+                song.getGenre(), song.getKeyScale(), song.getTempo(), song.getDuration(),
+                song.getAudioFile());
     }
 }

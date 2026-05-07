@@ -81,6 +81,16 @@
   color: var(--light);
 }
 
+.song-cover {
+  width: 48px;
+  height: 48px;
+  display: block;
+  border-radius: 10px;
+  object-fit: cover;
+  background: rgba(18, 18, 18, 0.9);
+  border: 1px solid rgba(112, 112, 112, 0.35);
+}
+
 .play-button {
   padding: 0.3rem 0.65rem;
   border: 1px solid var(--accent);
@@ -96,6 +106,24 @@
 .play-button:hover {
   transform: translateY(-1px);
   background: rgba(72, 30, 30, 0.98);
+}
+
+.remove-button {
+  margin-left: 0.5rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid rgba(255, 155, 155, 0.7);
+  border-radius: 999px;
+  background: rgba(56, 20, 20, 0.92);
+  color: var(--light);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.16s ease, background 0.16s ease;
+}
+
+.remove-button:hover {
+  transform: translateY(-1px);
+  background: rgba(92, 30, 30, 0.98);
 }
 
 .empty {

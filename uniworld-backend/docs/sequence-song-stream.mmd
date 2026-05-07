@@ -1,0 +1,48 @@
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant B as Browser (Audio Element)
+    participant FE as UniWorld Frontend (Angular)
+    participant API as UniWorld Backend API
+    participant AUTH as Auth Service (JWT)
+    participant DB as Metadata DB
+    participant MEDIA as Media Storage / CDN
+
+    U->>B: Click "Play" on song
+    B->>FE: emit playEvent(songId)
+    FE->>AUTH: ensure token (optional)
+    AUTH-->>FE: token valid (userId)
+
+    FE->>API: GET /api/songs/{id}/stream [Authorization]
+    API->>AUTH: validate token
+    AUTH-->>API: 200 OK (user)
+
+    API->>DB: fetch song metadata (path, mimeType, rights)
+    DB-->>API: metadata
+
+    alt Backend proxies stream
+      API->>MEDIA: open file stream (internal)
+      MEDIA-->>API: stream bytes (chunked)
+      API-->>FE: HTTP 200 chunked response (audio/*)
+      FE-->>B: set audio.srcObject(blob/stream) and play
+      B-->>B: audio plays (buffering handled by browser)
+    else CDN / Signed URL flow
+      API->>MEDIA: request signed URL for song file
+      MEDIA-->>API: signed URL (time-limited)
+      API-->>FE: 200 { streamUrl }
+      FE-->>B: audio.src = streamUrl
+      B->>MEDIA: GET streamUrl (CORS, Range)
+      MEDIA-->>B: stream bytes
+      B-->>B: audio plays
+    end
+
+    Note over API,FE: Playback telemetry (optional)
+    FE->>API: POST /api/telemetry/playback {position, events}
+    API->>DB: store telemetry
+    DB-->>API: 200 OK
+
+    %% Error handling
+    API-->>FE: 401/403 if auth fails
+    API-->>FE: 404 if song not found
+    MEDIA-->>API: 5xx if media unavailable
+    FE-->>B: show error UI / fallback

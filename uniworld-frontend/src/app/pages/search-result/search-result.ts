@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Search } from '../../components/search/search';
 import { Subscription } from 'rxjs';
 import type { Album } from '../../interfaces/Album';
 import type { Artist } from '../../interfaces/Artist';
@@ -13,7 +14,7 @@ import type { SearchResultResponse } from '../../interfaces/search-result';
 
 @Component({
   selector: 'app-search-result',
-  imports: [CommonModule],
+  imports: [CommonModule, Search],
   templateUrl: './search-result.html',
   styleUrl: './search-result.scss',
 })
@@ -53,7 +54,6 @@ export class SearchResult implements OnInit, OnDestroy {
       this.playlistActionMessage = '';
       if (!keyword) {
         this.results = { songs: [], artists: [], albums: [] };
-        this.sidebarPlayerService.clearSearchQueue();
         this.errorMessage = 'Enter a keyword to search.';
         return;
       }
@@ -64,7 +64,6 @@ export class SearchResult implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.playlistSelectionSubscription?.unsubscribe();
-    this.sidebarPlayerService.clearSearchQueue();
   }
 
   private search(keyword: string): void {
@@ -80,7 +79,6 @@ export class SearchResult implements OnInit, OnDestroy {
         this.loading = false;
       },
       error: () => {
-        this.sidebarPlayerService.clearSearchQueue();
         this.errorMessage = 'Search failed. Please try again.';
         this.loading = false;
       },

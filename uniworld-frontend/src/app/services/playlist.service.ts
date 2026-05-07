@@ -61,6 +61,20 @@ export class PlaylistService {
     });
   }
 
+  removeSongFromPlaylist(playlist: Playlist, songId: number): Observable<Playlist> {
+    const existingSongIds = this.extractSongIds(playlist);
+    if (!existingSongIds.includes(songId)) {
+      return of(playlist);
+    }
+
+    return this.update(playlist.playlistID, {
+      name: playlist.name,
+      isPublic: playlist.isPublic,
+      coverImage: playlist.coverImage,
+      songIds: existingSongIds.filter((existingSongId) => existingSongId !== songId),
+    });
+  }
+
   private syncSelectedPlaylist(updated: Playlist): void {
     const current = this.selectedPlaylistSubject.value;
     if (!current || current.playlistID === updated.playlistID) {

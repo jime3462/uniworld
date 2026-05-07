@@ -28,6 +28,7 @@ export class Player implements OnChanges, AfterViewInit {
   repeatMode: 'off' | 'all' | 'one' = 'off';
   currentTimeSeconds = 0;
   durationSeconds = 0;
+  private loadedSongId: number | null = null;
   readonly fallbackCoverImage =
     "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'%3E%3Crect width='320' height='320' fill='%231f1f1f'/%3E%3Ccircle cx='160' cy='160' r='88' fill='none' stroke='%23707070' stroke-width='16'/%3E%3Ccircle cx='160' cy='160' r='14' fill='%23707070'/%3E%3C/svg%3E";
 
@@ -50,7 +51,7 @@ export class Player implements OnChanges, AfterViewInit {
   get currentArtists(): string {
     const song = this.currentSong;
     if (!song || !song.artists || song.artists.length === 0) {
-      return 'Unknown artist';
+      return '—';
     }
 
     return song.artists.map((artist) => artist.name).join(', ');
@@ -81,6 +82,14 @@ export class Player implements OnChanges, AfterViewInit {
       this.currentIndex = (this.currentIndex + 1) % this.queue.length;
     }
     this.loadCurrentTrack(true);
+  }
+
+  play(): void {
+    const audio = this.audioPlayerRef?.nativeElement;
+    if (!audio || !this.currentSong) {
+      return;
+    }
+    audio.play().then(() => { this.isPlaying = true; }).catch(() => { this.isPlaying = false; });
   }
 
   togglePlayPause(): void {
@@ -209,7 +218,10 @@ export class Player implements OnChanges, AfterViewInit {
   }
 
   get albumCoverImage(): string {
-    const coverImage = this.currentSong?.album?.coverImage?.trim();
+    if (!this.currentSong) {
+      return 'assets/logo/colored-logo.png';
+    }
+    const coverImage = this.currentSong.album?.coverImage?.trim();
     return coverImage ? coverImage : this.fallbackCoverImage;
   }
 
@@ -240,6 +252,7 @@ export class Player implements OnChanges, AfterViewInit {
       this.isPlaying = false;
       this.currentTimeSeconds = 0;
       this.durationSeconds = 0;
+      this.loadedSongId = null;
       return;
     }
 
@@ -258,6 +271,14 @@ export class Player implements OnChanges, AfterViewInit {
       return;
     }
 
+    if (this.loadedSongId === song.songID) {
+      if (shouldAutoplay && !this.isPlaying) {
+        this.play();
+      }
+      return;
+    }
+
+    this.loadedSongId = song.songID;
     audio.load();
     this.isPlaying = false;
     this.currentTimeSeconds = 0;

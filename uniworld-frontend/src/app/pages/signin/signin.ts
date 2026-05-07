@@ -11,7 +11,7 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './signin.scss',
 })
 export class Signin {
-  email = '';
+  identifier = '';
   password = '';
   isSubmitting = false;
   errorMessage = '';
@@ -25,7 +25,7 @@ export class Signin {
     this.errorMessage = '';
     this.isSubmitting = true;
 
-    this.authService.login({ email: this.email, password: this.password }).subscribe({
+    this.authService.login({ identifier: this.identifier, password: this.password }).subscribe({
       next: () => {
         this.isSubmitting = false;
         void this.router.navigate(['/home']);

@@ -4,7 +4,7 @@ import type { Artist } from './Artist';
 export interface Song {
   songID: number;
   title: string;
-  album: Album;
+  album: Album | null;
   artists: Artist[];
   genre: string;
   keyScale: string;

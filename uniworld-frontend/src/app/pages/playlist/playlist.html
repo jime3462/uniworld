@@ -2,7 +2,7 @@
   <header class="hero" *ngIf="playlist">
     <img
       class="playlist-cover"
-      [src]="playlist.coverImage || fallbackCoverImage"
+      [src]="playlist.coverImage || 'assets/logo/colored-logo.png'"
       [alt]="playlist.name + ' cover'"
       (error)="onMediaImageError($event)"
     >
@@ -21,6 +21,7 @@
     <table class="songs-table" *ngIf="songs.length > 0; else noSongs">
       <thead>
         <tr>
+          <th>Cover</th>
           <th>Title</th>
           <th>Artist</th>
           <th>Album</th>
@@ -32,14 +33,23 @@
       </thead>
       <tbody>
         <tr *ngFor="let song of songs; let index = index">
+          <td>
+            <img
+              class="song-cover"
+              [src]="song.album?.coverImage || fallbackCoverImage"
+              [alt]="(song.album?.title || song.title) + ' cover'"
+              (error)="onMediaImageError($event)"
+            >
+          </td>
           <td>{{ song.title }}</td>
           <td>{{ song.artists[0]?.name || 'Unknown artist' }}</td>
-          <td>{{ song.album.title || 'Unknown album' }}</td>
+          <td>{{ song.album?.title || 'Unknown album' }}</td>
           <td>{{ song.genre || 'Unknown genre' }}</td>
           <td>{{ song.tempo || 0 }} BPM</td>
           <td>{{ formatDuration(song.duration || 0) }}</td>
           <td>
             <button type="button" class="play-button" (click)="playSong(index)">Play</button>
+            <button type="button" class="remove-button" [disabled]="removingSong" (click)="removeSong(index)">Remove</button>
           </td>
         </tr>
       </tbody>

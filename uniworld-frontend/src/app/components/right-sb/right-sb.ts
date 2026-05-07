@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import type { Song } from '../../interfaces/Song';
@@ -15,6 +15,8 @@ import { Player } from '../player/player';
   styleUrl: './right-sb.scss',
 })
 export class RightSb implements OnInit, OnDestroy {
+  @ViewChild(Player) private playerRef?: Player;
+
   songs: Song[] = [];
   searchQueue: Song[] = [];
   searchStartIndex = 0;
@@ -31,10 +33,21 @@ export class RightSb implements OnInit, OnDestroy {
     private readonly sidebarPlayerService: SidebarPlayerService,
   ) {}
 
+  get activeQueue(): Song[] {
+    return this.searchQueue.length > 0 ? this.searchQueue : this.songs;
+  }
+
+  get activeStartIndex(): number {
+    return this.searchQueue.length > 0 ? this.searchStartIndex : 0;
+  }
+
   ngOnInit(): void {
     this.playerStateSubscription = this.sidebarPlayerService.state$.subscribe((state) => {
       this.searchQueue = state.queue;
       this.searchStartIndex = state.startIndex;
+      if (state.autoplay) {
+        setTimeout(() => this.playerRef?.play(), 0);
+      }
     });
 
     this.loadCurrentUser();
@@ -55,6 +68,11 @@ export class RightSb implements OnInit, OnDestroy {
   }
 
   private loadCurrentUser(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.userName = 'User';
+      return;
+    }
+
     this.authService.me().subscribe({
       next: (user) => {
         this.userName = user.name?.trim() || 'User';

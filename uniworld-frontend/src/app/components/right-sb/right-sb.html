@@ -1,16 +1,12 @@
 <div class="profile">
     <p class="heading">User Profile</p>
-    <img class="profile-pic" [src]="profileImageUrl" alt="Profile Picture">
+    <img class="profile-pic" src="assets/logo/colored-logo.png" alt="Profile Picture">
     <a class="username" routerLink="/profile">{{ userName }}</a>
     <button type="button" class="logout-btn" (click)="logout()">Log Out</button>
 </div>
 
-<p class="heading">{{ hasSearchQueue ? 'Search Player' : 'Quick Player' }}</p>
+<p class="heading">{{ searchQueue.length > 0 ? 'Search Player' : 'Quick Player' }}</p>
 
-<app-player *ngIf="hasSearchQueue; else fallbackPlayer" [queue]="searchQueue" [startIndex]="searchStartIndex"></app-player>
+<p *ngIf="songsLoading" class="status">Loading songs...</p>
 
-<ng-template #fallbackPlayer>
-    <p *ngIf="songsLoading" class="status">Loading songs...</p>
-    <p *ngIf="songsError" class="status error">{{ songsError }}</p>
-    <app-player *ngIf="!songsLoading && !songsError" [queue]="songs" [startIndex]="0"></app-player>
-</ng-template>
+<app-player [queue]="activeQueue" [startIndex]="activeStartIndex"></app-player>
