@@ -5,12 +5,13 @@ import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import type { Playlist } from '../../interfaces/Playlist';
 import type { Song } from '../../interfaces/Song';
+import { Search } from '../../components/search/search';
 import { PlaylistService } from '../../services/playlist.service';
 import { SidebarPlayerService } from '../../services/sidebar-player.service';
 
 @Component({
   selector: 'app-playlist-page',
-  imports: [CommonModule],
+  imports: [CommonModule, Search],
   templateUrl: './playlist.html',
   styleUrl: './playlist.scss',
 })

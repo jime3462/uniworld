@@ -1,1 +1,94 @@
-<p>artist-profile works!</p>
+<app-search></app-search>
+<section class="artist-profile">
+  <header class="hero" *ngIf="artist">
+    <img
+      class="artist-image"
+      [src]="artist.image || fallbackImage"
+      [alt]="artist.name + ' image'"
+      (error)="onArtistImageError($event)"
+    >
+    <div class="hero-text">
+      <p class="eyebrow">Artist</p>
+      <h1>{{ artist.name }}</h1>
+      <p class="genre">{{ artist.genre || 'Unknown genre' }}</p>
+      <p class="status" *ngIf="!loading">{{ songs.length }} song(s) &bull; {{ albums.length }} album(s)</p>
+    </div>
+  </header>
+
+  <p class="status" *ngIf="loading">Loading artist...</p>
+  <p class="status error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <ng-container *ngIf="!loading && !errorMessage && artist">
+
+    <section class="group">
+      <div class="group-header">
+        <h2>Songs</h2>
+        <span>{{ songs.length }}</span>
+      </div>
+
+      <div class="table-wrap" *ngIf="songs.length > 0; else noSongs">
+        <table class="songs-table">
+          <thead>
+            <tr>
+              <th>Cover</th>
+              <th>Title</th>
+              <th>Album</th>
+              <th>Genre</th>
+              <th>Tempo</th>
+              <th>Duration</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let song of songs; let index = index"
+              [class.selected]="index === selectedSongIndex"
+            >
+              <td>
+                <img
+                  class="song-cover"
+                  [src]="song.album?.coverImage || fallbackCoverImage"
+                  [alt]="(song.album?.title || song.title) + ' cover'"
+                  (error)="onMediaImageError($event)"
+                >
+              </td>
+              <td>{{ song.title }}</td>
+              <td>{{ song.album?.title || 'Unknown album' }}</td>
+              <td>{{ song.genre || 'Unknown genre' }}</td>
+              <td>{{ song.tempo || 0 }} BPM</td>
+              <td>{{ formatDuration(song.duration || 0) }}</td>
+              <td>
+                <button type="button" class="play-button" (click)="playSong(index)">Play</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ng-template #noSongs><p class="empty">No songs found.</p></ng-template>
+    </section>
+
+    <section class="group">
+      <div class="group-header">
+        <h2>Albums</h2>
+        <span>{{ albums.length }}</span>
+      </div>
+
+      <div class="cards" *ngIf="albums.length > 0; else noAlbums">
+        <article class="album-card" *ngFor="let album of albums">
+          <img
+            class="album-cover"
+            [src]="album.coverImage || fallbackCoverImage"
+            [alt]="album.title + ' cover'"
+            (error)="onMediaImageError($event)"
+          >
+          <div class="album-info">
+            <h3>{{ album.title }}</h3>
+            <p>{{ album.genre || 'Unknown genre' }} &bull; {{ album.releaseYear || 'N/A' }}</p>
+          </div>
+        </article>
+      </div>
+      <ng-template #noAlbums><p class="empty">No albums found.</p></ng-template>
+    </section>
+
+  </ng-container>
+</section>

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Search } from '../../components/search/search';
 import { Subscription } from 'rxjs';
 import type { Album } from '../../interfaces/Album';
@@ -9,6 +9,7 @@ import type { Playlist } from '../../interfaces/Playlist';
 import type { Song } from '../../interfaces/Song';
 import { SearchService } from '../../services/search.service';
 import { PlaylistService } from '../../services/playlist.service';
+import { SongService } from '../../services/song.service';
 import { SidebarPlayerService } from '../../services/sidebar-player.service';
 import type { SearchResultResponse } from '../../interfaces/search-result';
 
@@ -37,8 +38,10 @@ export class SearchResult implements OnInit, OnDestroy {
 
   constructor(
     private readonly route: ActivatedRoute,
+    private readonly router: Router,
     private readonly searchService: SearchService,
     private readonly playlistService: PlaylistService,
+    private readonly songService: SongService,
     private readonly sidebarPlayerService: SidebarPlayerService,
   ) {}
 
@@ -49,12 +52,18 @@ export class SearchResult implements OnInit, OnDestroy {
 
     this.route.queryParamMap.subscribe((params) => {
       const keyword = params.get('keyword')?.trim() ?? '';
+      const genre = params.get('genre')?.trim() ?? '';
       this.keyword = keyword;
       this.selectedSongIndex = 0;
       this.playlistActionMessage = '';
       if (!keyword) {
         this.results = { songs: [], artists: [], albums: [] };
         this.errorMessage = 'Enter a keyword to search.';
+        return;
+      }
+
+      if (genre) {
+        this.searchByGenre(genre);
         return;
       }
 
@@ -83,6 +92,65 @@ export class SearchResult implements OnInit, OnDestroy {
         this.loading = false;
       },
     });
+  }
+
+  private searchByGenre(genre: string): void {
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.songService.getAll().subscribe({
+      next: (songs) => {
+        const filteredSongs = songs.filter((song) => this.genreMatches(song.genre, genre));
+        const songResults = filteredSongs.map((song) => this.toSongSearchResult(song));
+
+        this.results = {
+          songs: songResults,
+          artists: [],
+          albums: [],
+        };
+
+        this.sidebarPlayerService.setSearchQueue(filteredSongs, 0);
+        this.selectedSongIndex = 0;
+        this.loading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Search failed. Please try again.';
+        this.loading = false;
+      },
+    });
+  }
+
+  private genreMatches(songGenre: string, selectedGenre: string): boolean {
+    const normalizedSongGenre = this.normalizeGenreToken(songGenre);
+    const normalizedSelectedGenre = this.normalizeGenreToken(selectedGenre);
+
+    if (!normalizedSongGenre || !normalizedSelectedGenre) {
+      return false;
+    }
+
+    const genreAliases: Record<string, string[]> = {
+      pop: ['pop'],
+      'hip-hop/rap': ['hip hop', 'hip-hop', 'hiphop', 'rap'],
+      'r&b': ['r&b', 'rnb', 'rhythm and blues'],
+      reggaeton: ['reggaeton', 'reggaeton latino'],
+      country: ['country'],
+      edm: ['edm', 'electronic', 'electro', 'house', 'techno', 'trance', 'dubstep', 'dance'],
+      rock: ['rock', 'alternative rock', 'indie rock', 'punk rock', 'metal'],
+      'k-pop': ['k-pop', 'k pop', 'kpop'],
+      afrobeats: ['afrobeats', 'afrobeat', 'afro beats'],
+      'regional mexican': ['regional mexican', 'mexican regional', 'corridos', 'norteno', 'banda', 'mariachi'],
+    };
+
+    const aliases = genreAliases[normalizedSelectedGenre] ?? [normalizedSelectedGenre];
+    return aliases.some((alias) => normalizedSongGenre.includes(this.normalizeGenreToken(alias)));
+  }
+
+  private normalizeGenreToken(value: string): string {
+    return (value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
   }
 
   formatDuration(seconds: number): string {
@@ -130,6 +198,10 @@ export class SearchResult implements OnInit, OnDestroy {
     return this.addingSongIds.has(songId);
   }
 
+  navigateToArtist(artistId: number): void {
+    void this.router.navigate(['/artist', artistId]);
+  }
+
   onMediaImageError(event: Event): void {
     const image = event.target as HTMLImageElement;
     image.src = this.fallbackCoverImage;
@@ -163,6 +235,22 @@ export class SearchResult implements OnInit, OnDestroy {
       tempo: song.tempo,
       duration: song.duration,
       audioFile: song.audioFile,
+    };
+  }
+
+  private toSongSearchResult(song: Song): SearchResultResponse['songs'][number] {
+    return {
+      songID: song.songID,
+      title: song.title,
+      genre: song.genre,
+      keyScale: song.keyScale,
+      tempo: song.tempo,
+      duration: song.duration,
+      audioFile: song.audioFile,
+      albumID: song.album?.albumID ?? null,
+      albumTitle: song.album?.title ?? null,
+      coverImage: song.album?.coverImage ?? null,
+      artistNames: song.artists?.map((artist) => artist.name).join(', ') || 'Unknown artist',
     };
   }
 
