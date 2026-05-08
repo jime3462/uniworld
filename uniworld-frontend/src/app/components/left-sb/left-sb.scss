@@ -12,9 +12,32 @@
     color: var(--light);
 }
 
-.logo h3,
+.search-section {
+    width: 100%;
+}
+
 .playlist h3 {
     margin: 0;
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.logo-disk {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: rgba(112, 112, 112, 0.25);
+    animation: spin-disk 6s linear infinite;
+}
+
+@keyframes spin-disk {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
 }
 
 .menu ul {

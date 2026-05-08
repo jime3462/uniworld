@@ -1,7 +1,11 @@
 package com.uniworld.uniworld_backend.controller;
 
+import com.uniworld.uniworld_backend.Album;
 import com.uniworld.uniworld_backend.Artist;
+import com.uniworld.uniworld_backend.Song;
+import com.uniworld.uniworld_backend.repository.AlbumRepository;
 import com.uniworld.uniworld_backend.repository.ArtistRepository;
+import com.uniworld.uniworld_backend.repository.SongRepository;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,9 +24,13 @@ import org.springframework.web.server.ResponseStatusException;
 public class ArtistController {
 
     private final ArtistRepository artistRepository;
+    private final SongRepository songRepository;
+    private final AlbumRepository albumRepository;
 
-    public ArtistController(ArtistRepository artistRepository) {
+    public ArtistController(ArtistRepository artistRepository, SongRepository songRepository, AlbumRepository albumRepository) {
         this.artistRepository = artistRepository;
+        this.songRepository = songRepository;
+        this.albumRepository = albumRepository;
     }
 
     @GetMapping
@@ -34,6 +42,22 @@ public class ArtistController {
     public Artist getById(@PathVariable Long id) {
         return artistRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Artist not found"));
+    }
+
+    @GetMapping("/{id}/songs")
+    public List<Song> getSongsByArtist(@PathVariable Long id) {
+        if (!artistRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Artist not found");
+        }
+        return songRepository.findByArtists_ArtistID(id);
+    }
+
+    @GetMapping("/{id}/albums")
+    public List<Album> getAlbumsByArtist(@PathVariable Long id) {
+        if (!artistRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Artist not found");
+        }
+        return albumRepository.findByArtist_ArtistID(id);
     }
 
     @PostMapping

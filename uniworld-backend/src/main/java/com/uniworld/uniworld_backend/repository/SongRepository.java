@@ -19,4 +19,7 @@ public interface SongRepository extends JpaRepository<Song, Long> {
 
 	@EntityGraph(attributePaths = {"album", "album.artist", "artists"})
 	Optional<Song> findByAudioFileIgnoreCase(String audioFile);
+
+	@EntityGraph(attributePaths = {"album", "album.artist", "artists"})
+	List<Song> findByArtists_ArtistID(Long artistId);
 }

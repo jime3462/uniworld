@@ -17,4 +17,7 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
 	Optional<Album> findById(Long id);
 
 	Optional<Album> findByTitleIgnoreCaseAndArtist(String title, Artist artist);
+
+	@EntityGraph(attributePaths = {"artist"})
+	List<Album> findByArtist_ArtistID(Long artistId);
 }

@@ -27,7 +27,7 @@ export class Home {
 
   searchByGenre(genre: string): void {
     void this.router.navigate(['/search-result'], {
-      queryParams: { keyword: genre }
+      queryParams: { keyword: genre, genre }
     });
   }
 }

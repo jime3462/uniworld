@@ -5,6 +5,7 @@ import { Home } from './pages/home/home';
 import { PlaylistPage } from './pages/playlist/playlist';
 import { SearchResult } from './pages/search-result/search-result';
 import { Profile } from './pages/profile/profile';
+import { ArtistProfile } from './pages/artist-profile/artist-profile';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/signin', pathMatch: 'full' },
@@ -13,5 +14,6 @@ export const routes: Routes = [
   { path: 'home', component: Home },
   { path: 'playlist/:id', component: PlaylistPage },
   { path: 'search-result', component: SearchResult },
-  { path: 'profile', component: Profile }
+  { path: 'profile', component: Profile },
+  { path: 'artist/:id', component: ArtistProfile },
 ];

@@ -58,7 +58,15 @@
 				<span>{{ results.artists.length }}</span>
 			</div>
 			<div class="cards" *ngIf="results.artists.length > 0; else noArtists">
-				<article class="card artist-card" *ngFor="let artist of results.artists">
+				<article
+					class="card artist-card"
+					*ngFor="let artist of results.artists"
+					tabindex="0"
+					role="button"
+					(click)="navigateToArtist(artist.artistID)"
+					(keyup.enter)="navigateToArtist(artist.artistID)"
+					(keyup.space)="navigateToArtist(artist.artistID)"
+				>
 					<img
 						class="avatar"
 						[src]="artist.image || fallbackCoverImage"
