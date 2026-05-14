@@ -153,3 +153,176 @@
 		height: 180px;
 	}
 }
+
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.7);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+
+.modal-content {
+	background: rgba(31, 31, 31, 0.95);
+	border: 1px solid var(--mid);
+	border-radius: 14px;
+	padding: 1.5rem;
+	max-width: 400px;
+	width: 90%;
+	max-height: 80vh;
+	overflow-y: auto;
+}
+
+.modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+.modal-header h2 {
+	margin: 0;
+	font-size: 1.3rem;
+	color: var(--light);
+}
+
+.close-btn {
+	background: none;
+	border: none;
+	color: var(--mid);
+	font-size: 1.5rem;
+	cursor: pointer;
+	padding: 0;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: color 0.16s ease;
+}
+
+.close-btn:hover {
+	color: var(--light);
+}
+
+.modal-body {
+	margin-bottom: 1.5rem;
+}
+
+.modal-subtitle {
+	margin: 0 0 1rem 0;
+	color: var(--mid);
+	font-size: 0.95rem;
+}
+
+.playlist-options {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.playlist-checkbox {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.6rem 0.8rem;
+	border: 1px solid rgba(112, 112, 112, 0.4);
+	border-radius: 8px;
+	background: rgba(18, 18, 18, 0.5);
+	cursor: pointer;
+	transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.playlist-checkbox:hover {
+	background: rgba(42, 20, 20, 0.5);
+	border-color: var(--accent);
+}
+
+.playlist-checkbox input[type='checkbox'] {
+	cursor: pointer;
+	width: 18px;
+	height: 18px;
+	accent-color: var(--accent);
+}
+
+.playlist-checkbox span {
+	color: var(--light);
+	font-size: 0.95rem;
+	flex: 1;
+	user-select: none;
+}
+
+.playlist-checkbox input[type='checkbox']:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.empty-message {
+	color: var(--mid);
+	text-align: center;
+	padding: 1rem;
+	font-size: 0.9rem;
+}
+
+.error-message {
+	color: #ff9b9b;
+	font-size: 0.85rem;
+	margin: 0.5rem 0 0 0;
+}
+
+.modal-actions {
+	display: flex;
+	gap: 0.75rem;
+	justify-content: flex-end;
+}
+
+.btn-cancel,
+.btn-add {
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--mid);
+	border-radius: 6px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.16s ease;
+}
+
+.btn-cancel {
+	background: rgba(31, 31, 31, 0.6);
+	color: var(--light);
+}
+
+.btn-cancel:hover:not(:disabled) {
+	background: rgba(50, 50, 50, 0.8);
+	border-color: var(--light);
+}
+
+.btn-cancel:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.btn-add {
+	background: rgba(42, 20, 20, 0.92);
+	color: var(--light);
+	border-color: var(--accent);
+}
+
+.btn-add:hover:not(:disabled) {
+	background: rgba(72, 30, 30, 0.98);
+	transform: translateY(-1px);
+}
+
+.btn-add:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+

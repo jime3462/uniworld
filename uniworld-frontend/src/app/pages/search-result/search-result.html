@@ -3,7 +3,7 @@
 
 	<header class="hero">
 		<p class="eyebrow">Search results</p>
-		<h1>Results for “{{ keyword || '...' }}”</h1>
+		<h1>Results for "{{ keyword || '...' }}"</h1>
 		<p class="status" *ngIf="loading">Searching music library...</p>
 		<p class="status error" *ngIf="errorMessage">{{ errorMessage }}</p>
 		<p class="status" *ngIf="!loading && !errorMessage && selectedPlaylist">Selected playlist: {{ selectedPlaylist.name }}</p>
@@ -41,8 +41,8 @@
 						<button
 							type="button"
 							class="add-button"
-							(click)="addSongToSelectedPlaylist(song, $event)"
-							[disabled]="!selectedPlaylist || isAddingSong(song.songID)"
+							(click)="openAddToPlaylistModal(song, $event)"
+							[disabled]="isAddingSong(song.songID)"
 						>
 							{{ isAddingSong(song.songID) ? 'Adding...' : 'Add to playlist' }}
 						</button>
@@ -105,4 +105,37 @@
 			<ng-template #noAlbums><p class="empty">No albums found.</p></ng-template>
 		</section>
 	</ng-container>
+
+	<div class="modal-overlay" *ngIf="showAddToPlaylistModal" (click)="closeAddToPlaylistModal()">
+		<div class="modal-content" (click)="$event.stopPropagation()">
+			<div class="modal-header">
+				<h2>Add to Playlist</h2>
+				<button type="button" class="close-btn" (click)="closeAddToPlaylistModal()">✕</button>
+			</div>
+			<div class="modal-body">
+				<p class="modal-subtitle" *ngIf="selectedSongForPlaylist">Adding "{{ selectedSongForPlaylist.title }}" to:</p>
+				<div class="playlist-options">
+					<div *ngIf="playlists.length === 0" class="empty-message">
+						No playlists available. Create one first.
+					</div>
+					<label *ngFor="let playlist of playlists" class="playlist-checkbox">
+						<input
+							type="checkbox"
+							[checked]="selectedPlaylistsForAdd.has(playlist.playlistID)"
+							(change)="togglePlaylistSelection(playlist.playlistID)"
+							[disabled]="isAddingSong(selectedSongForPlaylist?.songID || 0)"
+						/>
+						<span>{{ playlist.name }}</span>
+					</label>
+				</div>
+				<p *ngIf="playlistActionMessage" class="error-message">{{ playlistActionMessage }}</p>
+			</div>
+			<div class="modal-actions">
+				<button type="button" class="btn-cancel" (click)="closeAddToPlaylistModal()" [disabled]="isAddingSong(selectedSongForPlaylist?.songID || 0)">Cancel</button>
+				<button type="button" class="btn-add" (click)="addSongToSelectedPlaylists()" [disabled]="selectedPlaylistsForAdd.size === 0 || isAddingSong(selectedSongForPlaylist?.songID || 0)">
+					{{ isAddingSong(selectedSongForPlaylist?.songID || 0) ? 'Adding...' : 'Add Song' }}
+				</button>
+			</div>
+		</div>
+	</div>
 </section>

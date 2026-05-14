@@ -27,6 +27,10 @@ export class SearchResult implements OnInit, OnDestroy {
   selectedSongIndex = 0;
   selectedPlaylist: Playlist | null = null;
   addingSongIds = new Set<number>();
+  showAddToPlaylistModal = false;
+  selectedSongForPlaylist: SearchResultResponse['songs'][number] | null = null;
+  selectedPlaylistsForAdd = new Set<number>();
+  playlists: Playlist[] = [];
   private playlistSelectionSubscription?: Subscription;
   readonly fallbackCoverImage =
     "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'%3E%3Crect width='320' height='320' fill='%231f1f1f'/%3E%3Ccircle cx='160' cy='160' r='88' fill='none' stroke='%23707070' stroke-width='16'/%3E%3Ccircle cx='160' cy='160' r='14' fill='%23707070'/%3E%3C/svg%3E";
@@ -49,6 +53,8 @@ export class SearchResult implements OnInit, OnDestroy {
     this.playlistSelectionSubscription = this.playlistService.selectedPlaylist$.subscribe((playlist) => {
       this.selectedPlaylist = playlist;
     });
+
+    this.loadPlaylists();
 
     this.route.queryParamMap.subscribe((params) => {
       const keyword = params.get('keyword')?.trim() ?? '';
@@ -190,6 +196,85 @@ export class SearchResult implements OnInit, OnDestroy {
       error: () => {
         this.addingSongIds.delete(song.songID);
         this.playlistActionMessage = 'Failed to add song to playlist. Please try again.';
+      },
+    });
+  }
+
+  openAddToPlaylistModal(song: SearchResultResponse['songs'][number], event: Event): void {
+    event.stopPropagation();
+    this.selectedSongForPlaylist = song;
+    this.selectedPlaylistsForAdd.clear();
+    this.showAddToPlaylistModal = true;
+    this.playlistActionMessage = '';
+  }
+
+  closeAddToPlaylistModal(): void {
+    this.showAddToPlaylistModal = false;
+    this.selectedSongForPlaylist = null;
+    this.selectedPlaylistsForAdd.clear();
+  }
+
+  togglePlaylistSelection(playlistId: number): void {
+    if (this.selectedPlaylistsForAdd.has(playlistId)) {
+      this.selectedPlaylistsForAdd.delete(playlistId);
+    } else {
+      this.selectedPlaylistsForAdd.add(playlistId);
+    }
+  }
+
+  addSongToSelectedPlaylists(): void {
+    if (!this.selectedSongForPlaylist || this.selectedPlaylistsForAdd.size === 0) {
+      return;
+    }
+
+    const songId = this.selectedSongForPlaylist.songID;
+    if (this.addingSongIds.has(songId)) {
+      return;
+    }
+
+    this.addingSongIds.add(songId);
+    this.playlistActionMessage = '';
+
+    const playlistIdsArray = Array.from(this.selectedPlaylistsForAdd);
+    let completed = 0;
+    let failed = false;
+
+    playlistIdsArray.forEach((playlistId) => {
+      const playlist = this.playlists.find((p) => p.playlistID === playlistId);
+      if (!playlist) {
+        completed++;
+        return;
+      }
+
+      this.playlistService.addSongToPlaylist(playlist, songId).subscribe({
+        next: () => {
+          completed++;
+          if (completed === playlistIdsArray.length) {
+            this.addingSongIds.delete(songId);
+            this.playlistActionMessage = `Added "${this.selectedSongForPlaylist?.title}" to ${playlistIdsArray.length} playlist${playlistIdsArray.length > 1 ? 's' : ''}.`;
+            this.closeAddToPlaylistModal();
+          }
+        },
+        error: () => {
+          failed = true;
+          completed++;
+          if (completed === playlistIdsArray.length) {
+            this.addingSongIds.delete(songId);
+            this.playlistActionMessage = 'Failed to add song to some playlists. Please try again.';
+          }
+        },
+      });
+    });
+  }
+
+  private loadPlaylists(): void {
+    this.playlistService.getAll().subscribe({
+      next: (playlists) => {
+        this.playlists = playlists;
+      },
+      error: () => {
+        console.error('Failed to load playlists');
+        this.playlists = [];
       },
     });
   }
